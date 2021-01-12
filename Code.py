@@ -140,7 +140,7 @@ class YouTubeDownloader:
 
 #link of the video to be downloaded
 link="https://www.youtube.com/watch?v=Cb6wuzOurPc"
-type = 'video'
+type = 'audio'
 main = YouTubeDownloader()
 verdict, video_updated_title,video_file_name,audio_file_name = main.Control(type,link)
 del main
