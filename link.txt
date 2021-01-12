@@ -1,0 +1,3 @@
+https://www.geeksforgeeks.org/pytube-python-library-download-youtube-videos/
+https://www.geeksforgeeks.org/video-to-audio-convert-using-python/
+https://stackoverflow.com/questions/33448759/python-converting-video-to-audio
