@@ -48,10 +48,23 @@ class MyWindow(QMainWindow):
         self.high.clicked.connect(lambda : self.outputQuality('high'))
         self.high.move(220,60)
 
+        self.label2 = QtWidgets.QLabel(self)
+        self.label2.setText('Status: ')
+        self.label2.move(20,300)
+
     def clickType(self,type):
         link = self.textbox.text()
+        self.label2.setText('Status: Download Being Processed')
+        self.label2.adjustSize()
+        verdict = ""
         verdict, video_updated_title,video_file_name,audio_file_name = self.main.Main(type,link,self.quality)
         self.quality = 'low'
+        if(verdict == True):
+            self.label2.setText('Status: Download Successful')
+            self.label2.adjustSize()
+        elif(verdict == False):
+            self.label2.setText('Status: Download Failed')
+            self.label2.adjustSize()
 
     def outputQuality(self,q):
         self.quality = q
