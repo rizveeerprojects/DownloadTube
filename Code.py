@@ -16,27 +16,43 @@ class YouTubeDownloader:
             else:
                 new_name=new_name+name[i]
         return new_name
-    def VideoDownload(self,video_url):
+
+    def ExtractingTheInteger(self,string):
+        value = ""
+        for i in range(0,len(string)):
+            if(string[i]>='0' and string[i] <= '9'):
+                value = value +string[i]
+        return int(value)
+
+    def DownloadInitiate(self, video_url, type='video'):
         try:
             try:
                 #object creation using YouTube which was imported in the beginning
                 yt = YouTube(video_url)
-                list = yt.streams.all()
+                self.thumbnail_url = yt.thumbnail_url
+                list = yt.streams.filter(type=type)
                 print(list)
                 default_index = 0
                 max_resolution = 0
                 resolutions = []
+                parse_type = ""
+                if(type == 'video'):
+                    parse_type = 'res='
+                elif(type == 'audio'):
+                    parse_type = 'abr='
                 for i in range(0,len(list)):
                     string = str(list[i])
                     string = string.split(" ")
                     for j in range(0,len(string)):
-                        if('res=' in string[j]):
+                        if(parse_type in string[j]):
                             resolution = string[j].split('"')
                             print(resolution)
                             resolution = resolution[1].split('p')
                             print(resolution)
                             try:
-                                resolution = int(resolution[0])
+                                print(resolution[0])
+                                resolution = self.ExtractingTheInteger(resolution[0])
+                                print("resul = ",resolution)
                                 if(resolution not in resolutions):
                                     resolutions.append(resolution)
                             except Exception as e:
@@ -81,7 +97,7 @@ class YouTubeDownloader:
         except Exception as e:
             print(e)
             return False, None, video_file_name
-    def PerformVideoDownload(self, video_updated_title, list_of_streams, index):
+    def PerformDownload(self, video_updated_title, list_of_streams, index):
         stream = list_of_streams[index]
         try:
             stream.download(video_updated_title)
@@ -90,6 +106,7 @@ class YouTubeDownloader:
         except Exception as e:
             print(e)
             return False
+            
     def ChooseResolution(self,resolutions):
         if(len(resolutions) == 1):
             return 0
@@ -105,11 +122,11 @@ class YouTubeDownloader:
                 if(index>=0 and index<=len(resolutions)-1):
                     return index
 
-    def VideoDownloading(self,link):
+    def DownloadBase(self,video_url, type):
         for i in range(0,10):
-            verdict,video_updated_title,list_of_streams,default_index,resolutions  = self.VideoDownload(link)
+            verdict,video_updated_title,list_of_streams,default_index,resolutions  = self.DownloadInitiate(video_url,type)
             if(verdict == True):
-                verdict = self.PerformVideoDownload(video_updated_title, list_of_streams, default_index)
+                verdict = self.PerformDownload(video_updated_title, list_of_streams, default_index)
                 if(verdict == True):
                     return True,video_updated_title
             else:
@@ -117,33 +134,14 @@ class YouTubeDownloader:
                 print("Again Trying")
         return False,None
 
-    def Control(self,type,link):
-        if(type == 'audio'):
-            verdict,video_updated_title = self.VideoDownloading(link)
-            if(verdict == True):
-                for i in range(0,10):
-                    try:
-                        verdict, audio_file_name, video_file_name = self.VideoToAudio(video_updated_title)
-                        if(verdict == True):
-                            break
-                    except Exception as e:
-                        print(e)
-                        continue
-            if(verdict == True):
-                return verdict, video_updated_title,video_file_name,audio_file_name
-            else:
-                print("Audio Download Failed")
-            return verdict
-        elif(type == 'video'):
-            verdict,video_updated_title = self.VideoDownloading(link)
+    def Main(self,type,link):
+        if(type == 'video' or type == 'audio'):
+            verdict,video_updated_title = self.DownloadBase(video_url=link, type=type)
             return verdict,video_updated_title,"",""
 
 #link of the video to be downloaded
 link="https://www.youtube.com/watch?v=Cb6wuzOurPc"
-type = 'audio'
+type = 'video'
 main = YouTubeDownloader()
-verdict, video_updated_title,video_file_name,audio_file_name = main.Control(type,link)
+verdict, video_updated_title,video_file_name,audio_file_name = main.Main(type,link)
 del main
-if(verdict == True and type == 'audio'):
-    os.remove(video_updated_title+'/'+video_file_name)
-    print("file removed")
