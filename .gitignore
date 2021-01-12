@@ -18,4 +18,4 @@ bin-release/
 # information for Eclipse / Flash Builder.
 
 # all the directories are not pushed into git
-/
+*/
