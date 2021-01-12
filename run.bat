@@ -1,0 +1,3 @@
+python GUI.py
+
+pause

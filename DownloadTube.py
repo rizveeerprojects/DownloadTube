@@ -4,6 +4,7 @@ import moviepy.editor as mp
 import time # time module
 import string
 import os
+from math import ceil
 
 class YouTubeDownloader:
     def __init__(self):
@@ -30,7 +31,10 @@ class YouTubeDownloader:
                 #object creation using YouTube which was imported in the beginning
                 yt = YouTube(video_url)
                 self.thumbnail_url = yt.thumbnail_url
-                list = yt.streams.filter(type=type)
+                if(type == 'audio'):
+                    list = yt.streams.filter(type=type)
+                else:
+                    list = yt.streams.filter(progressive=True)
                 print(list)
                 default_index = 0
                 max_resolution = 0
@@ -106,7 +110,7 @@ class YouTubeDownloader:
         except Exception as e:
             print(e)
             return False
-            
+
     def ChooseResolution(self,resolutions):
         if(len(resolutions) == 1):
             return 0
@@ -122,9 +126,15 @@ class YouTubeDownloader:
                 if(index>=0 and index<=len(resolutions)-1):
                     return index
 
-    def DownloadBase(self,video_url, type):
+    def DownloadBase(self,video_url, type, quality):
         for i in range(0,10):
             verdict,video_updated_title,list_of_streams,default_index,resolutions  = self.DownloadInitiate(video_url,type)
+            if(quality == 'low'):
+                default_index = 0
+            elif(quality == 'high'):
+                default_index = len(resolutions)-1
+            else:
+                default_index = ceil(len(resolutions)/2.0)
             if(verdict == True):
                 verdict = self.PerformDownload(video_updated_title, list_of_streams, default_index)
                 if(verdict == True):
@@ -134,14 +144,16 @@ class YouTubeDownloader:
                 print("Again Trying")
         return False,None
 
-    def Main(self,type,link):
+    def Main(self,type,link,quality):
         if(type == 'video' or type == 'audio'):
-            verdict,video_updated_title = self.DownloadBase(video_url=link, type=type)
+            verdict,video_updated_title = self.DownloadBase(video_url=link, type=type, quality=quality)
             return verdict,video_updated_title,"",""
 
+"""
 #link of the video to be downloaded
 link="https://www.youtube.com/watch?v=Cb6wuzOurPc"
 type = 'video'
 main = YouTubeDownloader()
 verdict, video_updated_title,video_file_name,audio_file_name = main.Main(type,link)
 del main
+"""
