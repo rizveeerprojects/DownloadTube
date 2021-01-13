@@ -2,6 +2,44 @@ from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QApplication, QMainWindow
 import sys
 from DownloadTube import YouTubeDownloader
+import threading
+import time
+
+
+thread_track={}
+
+def DownloadTubeCallThreadFunction(type,link,quality,my_window_object):
+    try:
+        verdict, video_updated_title,video_file_name,audio_file_name = my_window_object.main.Main(type,link,quality)
+        if(verdict == True):
+            my_window_object.label2.setText('Status: Download Successful')
+            my_window_object.label2.adjustSize()
+        elif(verdict == False):
+            my_window_object.label2.setText('Status: Download Failed')
+            my_window_object.label2.adjustSize()
+    except Exception as e:
+        print(e)
+        my_window_object.label2.setText('Status: Error Occurred')
+        my_window_object.label2.adjustSize()
+    global thread_track
+    thread_track.clear()
+
+class MyThread (threading.Thread):
+   def __init__(self, threadID,type,link,quality,my_window_object):
+      threading.Thread.__init__(self)
+      self.threadID = threadID
+      self.type = type
+      self.link = link
+      self.quality = quality
+      self.my_window_object = my_window_object
+
+      global thread_track
+
+   def run(self):
+      print ("Starting ",self.threadID)
+      DownloadTubeCallThreadFunction(self.type,self.link,self.quality,self.my_window_object)
+      print ("Exiting ", self.threadID)
+
 
 class MyWindow(QMainWindow):
     def __init__(self):
@@ -11,6 +49,7 @@ class MyWindow(QMainWindow):
         self.InitUI()
         self.main = YouTubeDownloader()
         self.quality = 'low'
+        self.thread_count = 0
 
 
     def InitUI(self):
@@ -54,17 +93,21 @@ class MyWindow(QMainWindow):
 
     def clickType(self,type):
         link = self.textbox.text()
+
         self.label2.setText('Status: Download Being Processed')
         self.label2.adjustSize()
-        verdict = ""
-        verdict, video_updated_title,video_file_name,audio_file_name = self.main.Main(type,link,self.quality)
+        print("Status: Download Being Processed")
+
+
+        self.thread_count = self.thread_count + 1
+
+        thread1 = MyThread(self.thread_count,type,link,self.quality,self)
         self.quality = 'low'
-        if(verdict == True):
-            self.label2.setText('Status: Download Successful')
-            self.label2.adjustSize()
-        elif(verdict == False):
-            self.label2.setText('Status: Download Failed')
-            self.label2.adjustSize()
+        thread1.start()
+        global thread_track
+        thread_track[self.thread_count] = thread1
+        print('active thread count = ',threading.activeCount())
+
 
     def outputQuality(self,q):
         self.quality = q
@@ -79,3 +122,5 @@ def window():
     sys.exit(app.exec_())
 
 window()
+for t in thread_track:
+    thread_track[i].join()

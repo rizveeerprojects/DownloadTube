@@ -134,7 +134,7 @@ class YouTubeDownloader:
             elif(quality == 'high'):
                 default_index = len(resolutions)-1
             else:
-                default_index = ceil(len(resolutions)/2.0)
+                default_index = floor(len(resolutions)/2.0)
             if(verdict == True):
                 verdict = self.PerformDownload(video_updated_title, list_of_streams, default_index)
                 if(verdict == True):
