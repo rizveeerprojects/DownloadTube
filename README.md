@@ -15,6 +15,10 @@ pip install -r requirements.txt
 If you have both python2 and python3, use pip3 while downloading requirements.txt
 ```
 
+# Running
+```
+Run "run.bat" file for windows
+```
 
 ## Authors
 
