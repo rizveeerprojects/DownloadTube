@@ -22,7 +22,7 @@ Run "run.bat" file for windows
 
 ## Authors
 
-* **Redwan Ahmed Rizvee** - *Initial work* - [rizveeerprojects](https://github.com/rizveeerprojects)
+* **Redwan Ahmed Rizvee** - *Initial work* - [rizveeredwan](https://github.com/rizveeredwan)
 
 ## Acknowledgments
 
